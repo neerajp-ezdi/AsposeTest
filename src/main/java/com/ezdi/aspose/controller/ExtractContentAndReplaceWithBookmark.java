@@ -17,7 +17,7 @@ public class ExtractContentAndReplaceWithBookmark {
         try{
             System.out.println("Now inside extractContentBetweenServices");
             String dataDir = Util.getDataDir();
-            Document doc = new Document(dataDir + "bmaninder.docx");
+            Document doc = new Document(dataDir + "RMCA_Progress_Note.docx");
             //NodeCollection<Paragraph> paragraphCollection = doc.getFirstSection().getBody().getChildNodes(NodeType.PARAGRAPH, true);
             NodeCollection nodeCollection = doc.getFirstSection().getBody().getChildNodes();
             for(Node node : (Iterable<Node>) nodeCollection){
@@ -35,7 +35,7 @@ public class ExtractContentAndReplaceWithBookmark {
                             Run run = new Run(doc);
                             run.setText("BODY_CONTENT");
                             newParagraph.appendChild(run);
-                            doc.getFirstSection().getBody().insertAfter(newParagraph, node);
+                            doc.getFirstSection().getBody().insertBefore(newParagraph, node);
                         }
                     }
                 } else {
@@ -67,6 +67,7 @@ public class ExtractContentAndReplaceWithBookmark {
             //ArrayList extractedNodes = null;
             //Document dstDoc = generateDocument(doc, extractedNodes);
             //dstDoc.save(dataDir + "output.docx");
+            doc.save(dataDir + "RMCA_Progress_Note_Content_output.docx");
             System.out.println("Now exiting from extractContentBetweenServices");
         } catch(Exception ex){
             System.out.println("Excption caught is now " + ex);
