@@ -12,21 +12,24 @@ import java.util.ArrayList;
 @RestController
 public class ExtractContentAndReplaceWithBookmark {
 
-        @GetMapping("extractAndPlaceBookMark")
+    @GetMapping("extractAndPlaceBookMark")
     public void extractContentBetweenServices(){
         try{
             System.out.println("Now inside extractContentBetweenServices");
             String dataDir = Util.getDataDir();
-            Document doc = new Document(dataDir + "bmaninder.docx");
-            NodeCollection<Paragraph> paragraphCollection = doc.getFirstSection().getBody().getChildNodes(NodeType.PARAGRAPH, true);
-            for(Paragraph paragraph : (Iterable<Paragraph>) paragraphCollection){
-                if(ProcessData.isValid(paragraph.getRuns())){
-                    if(ProcessData.isValid(paragraph.getRuns().get(0))) {
-                        if(ProcessData.isValid(paragraph.getRuns().get(0).getText()))
+            Document doc = new Document(dataDir + "Template.docx");
+            //NodeCollection<Paragraph> paragraphCollection = doc.getFirstSection().getBody().getChildNodes(NodeType.PARAGRAPH, true);
+            NodeCollection nodeCollection = doc.getFirstSection().getBody().getChildNodes();
+            for(Node node : (Iterable<Node>) nodeCollection){
+                if(node.getNodeType() == NodeType.PARAGRAPH) {
+                    Paragraph paragraph = (Paragraph) node;
+                    if(ProcessData.isValid(paragraph.getRuns()) && ProcessData.isValid(paragraph.getRuns().get(0))
+                            && ProcessData.isValid(paragraph.getRuns().get(0).getText())){
                         System.out.println("Paragraph text is now " + paragraph.getRuns().get(0).getText()
                                 + " and paragraph index is now " + paragraph.getAncestor(NodeType.BODY).indexOf(paragraph));
-
                     }
+                } else {
+                    System.out.println("Node is not of type paragraph. The NodeType is " + node.getNodeType() + " and text is " + node.toString() );
                 }
             }
             //ArrayList extractedNodes = null;

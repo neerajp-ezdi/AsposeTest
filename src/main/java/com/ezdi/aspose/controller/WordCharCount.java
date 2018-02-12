@@ -5,11 +5,11 @@ package com.ezdi.aspose.controller;
 
 import com.aspose.words.*;
 import com.aspose.words.Paragraph;
+import com.ezdi.aspose.util.Util;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ezdi.aspose.Util;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
