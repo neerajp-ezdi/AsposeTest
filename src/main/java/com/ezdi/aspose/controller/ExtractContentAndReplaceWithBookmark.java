@@ -17,9 +17,11 @@ public class ExtractContentAndReplaceWithBookmark {
         try{
             System.out.println("Now inside extractContentBetweenServices");
             String dataDir = Util.getDataDir();
-            Document doc = new Document(dataDir + "RMCA_Progress_Note.docx");
+            Document doc = new Document(dataDir + "bmaninder.docx");
             //NodeCollection<Paragraph> paragraphCollection = doc.getFirstSection().getBody().getChildNodes(NodeType.PARAGRAPH, true);
             NodeCollection nodeCollection = doc.getFirstSection().getBody().getChildNodes();
+            Paragraph startPara = null;
+            Paragraph endPara = null;
             for(Node node : (Iterable<Node>) nodeCollection){
                 if(node.getNodeType() == NodeType.PARAGRAPH) {
                     Paragraph paragraph = (Paragraph) node;
@@ -36,14 +38,18 @@ public class ExtractContentAndReplaceWithBookmark {
                             run.setText("BODY_CONTENT");
                             newParagraph.appendChild(run);
                             doc.getFirstSection().getBody().insertBefore(newParagraph, node);
+                            startPara = newParagraph;
+                        } else if(paragraph.getRuns().get(0).getText().contains("==END==")){
+                            endPara = (Paragraph) node;
                         }
                     }
                 } else {
                     System.out.println("Node is not of type paragraph. The NodeType is " + node.getNodeType() + " and text is " + node.toString() );
                 }
             }
-
-            System.out.println("Now printing after iterating the second time ");
+            System.out.println("Now extracting paragraph content from ==start== to ==end== ");
+            removeMarkedBodyBetweenParagraph(doc, startPara, endPara);
+            /*
             NodeCollection newNodeCollection = doc.getFirstSection().getBody().getChildNodes();
             for(Node node : (Iterable<Node>) newNodeCollection){
                 if(node.getNodeType() == NodeType.PARAGRAPH) {
@@ -52,27 +58,43 @@ public class ExtractContentAndReplaceWithBookmark {
                             && ProcessData.isValid(paragraph.getRuns().get(0).getText())){
                         System.out.println("Paragraph text is now " + paragraph.getRuns().get(0).getText()
                                 + " and paragraph index is now " + paragraph.getAncestor(NodeType.BODY).indexOf(paragraph));
-                        /*if(paragraph.getRuns().get(0).getText().contains("==START==")){
+                        if(paragraph.getRuns().get(0).getText().contains("==START==")){
                             Paragraph newParagraph = new Paragraph(doc);
                             Run run = new Run(doc);
                             run.setText("BODY_CONTENT");
                             newParagraph.appendChild(run);
                             doc.insertAfter(newParagraph, node);
-                        } */
+                        }
                     }
                 } else {
                     System.out.println("Node is not of type paragraph. The NodeType is " + node.getNodeType() + " and text is " + node.toString() );
                 }
-            }
+            } */
             //ArrayList extractedNodes = null;
             //Document dstDoc = generateDocument(doc, extractedNodes);
             //dstDoc.save(dataDir + "output.docx");
-            doc.save(dataDir + "RMCA_Progress_Note_Content_output.docx");
+            doc.save(dataDir + "bmaninder_output.docx");
             System.out.println("Now exiting from extractContentBetweenServices");
         } catch(Exception ex){
             System.out.println("Excption caught is now " + ex);
         }
     }
+
+    public static void removeMarkedBodyBetweenParagraph(Document doc, Paragraph start, Paragraph end) throws Exception {
+        if (ProcessData.isValid(start)  && ProcessData.isValid(end) ) {
+            DocumentBuilder builder = new DocumentBuilder(doc);
+            builder.moveTo(start);
+
+            BookmarkStart bmStart = builder.startBookmark("bm");
+            BookmarkEnd bmEnd = builder.endBookmark("bm");
+
+            end.appendChild(bmEnd);
+
+            bmStart.getBookmark().setText("");
+            bmStart.getBookmark().remove();
+        }
+    }
+
 
     public static Document generateDocument(Document srcDoc, ArrayList nodes) throws Exception {
 
